@@ -19,6 +19,7 @@ func (g mapgraph) Has(n Node) bool {
 func (g mapgraph) Add(nodes ...Node) {
 	for _, n := range nodes {
 		if !g.Has(n) {
+			//g.assignUnusedID(n)
 			g[n] = make(NodeSlice, 0)
 		}
 	}
@@ -31,7 +32,7 @@ func (g mapgraph) Remove(nodes ...Node) {
 		// remove edges so that current neighbors do not maintain
 		// "dangling" directed edges to n
 		for _, neighbor := range g.Neighbors(n) {
-			g.RemoveEdge(n, neighbor)
+			g[neighbor].Remove(n)
 		}
 		// remove the node
 		delete(g, n)
@@ -47,16 +48,19 @@ func (g mapgraph) Neighbors(n Node) NodeSlice {
 // HadEdge returns true if a and b and connected with an edge. False is returned
 // if a and b are not connected or if a is not in the graph.
 func (g mapgraph) HasEdge(a, b Node) bool {
-	n, in := g[a]
+	neighbors, in := g[a]
 	if !in {
 		return false
 	}
-	return n.Has(b)
+	return neighbors.Has(b)
 }
 
 // AddEdge adds an undirected edge connecting a and b. Nodes a and b are added
 // to the graph if not already present.
 func (g mapgraph) AddEdge(a, b Node) {
+	if a == b {
+		return
+	}
 	g.Add(a, b)
 	g[a] = g[a].AppendUnique(b)
 	g[b] = g[b].AppendUnique(a)
@@ -65,10 +69,22 @@ func (g mapgraph) AddEdge(a, b Node) {
 // RemoveEdge removes the edge connecting a and b. It does nothing if a, b, or
 // the edge are not in the graph.
 func (g mapgraph) RemoveEdge(a, b Node) {
-	if !g.Has(a) || !g.Has(b) || !g.HasEdge(a, b) {
-		return
+	if g.Has(a) {
+		g[a] = g[a].Remove(b)
 	}
 
-	g[a] = g[a].Remove(b)
-	g[b] = g[b].Remove(a)
+	if g.Has(b) {
+		g[b] = g[b].Remove(a)
+	}
 }
+
+// assignUnusedID assigns an id to n.
+// func (g mapgraph) assignUnusedID(n Node) {
+// 	var id ID
+// 	used := true
+// 	for used {
+// 		id := randID(maxID)
+// 		_, used = g[id]
+// 	}
+// 	n.SetID(id)
+// }

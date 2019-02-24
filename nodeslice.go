@@ -14,12 +14,16 @@ func ToNodeSlice(list []interface{}) NodeSlice {
 }
 
 // Append adds the nodes to the slice.
+// Must be used as:
+//     s = s.Append(n)
 func (slice NodeSlice) Append(n ...Node) NodeSlice {
 	return append(slice, n...)
 }
 
 // AppendUnique adds the node to the slice only if it is not already
 // in the slice.
+// Must be used as:
+//     s = s.AppendUnique(n)
 func (slice NodeSlice) AppendUnique(n Node) NodeSlice {
 	if !slice.Has(n) {
 		slice = slice.Append(n)
@@ -64,6 +68,8 @@ func (slice NodeSlice) removeAt(i int) NodeSlice {
 
 // Remove removes the first occurence of 'n' from the slice. The
 // original order is not preserved.
+// Must be used as:
+//     s = s.Remove(n)
 func (slice NodeSlice) Remove(n Node) NodeSlice {
 	i := slice.index(n)
 	if i < len(slice) {

@@ -1,13 +1,29 @@
 package maze
 
+import (
+	"math/rand"
+)
+
 // TODO: for future consideration.
 // type void struct{}
 // type nodeSet map[Node]void
 
+// ID is used to uniquely identify nodes.
+type ID = uint32
+
+const maxID = 1<<32 - 1
+
+func randID(max int) ID {
+	n := clamp(max, 1, maxID)
+	return ID(rand.Intn(n))
+}
+
 // Node allows types to become "nodes" or "cells" in a maze, which is
-// essentially just an undirected graph.
+// essentially just an undirected graph. Node must be a hashable/comparable
+// type (ie not a slice, map, or function).
 type Node interface {
-	IsNeighbor(other Node) bool
+	// ID() ID
+	// SetID(ID) Node
 }
 
 // Graph provides the basic interface needed by maze making algorithms, since
