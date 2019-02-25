@@ -19,7 +19,6 @@ func (g mapgraph) Has(n Node) bool {
 func (g mapgraph) Add(nodes ...Node) {
 	for _, n := range nodes {
 		if !g.Has(n) {
-			//g.assignUnusedID(n)
 			g[n] = make(NodeSlice, 0)
 		}
 	}
@@ -32,7 +31,7 @@ func (g mapgraph) Remove(nodes ...Node) {
 		// remove edges so that current neighbors do not maintain
 		// "dangling" directed edges to n
 		for _, neighbor := range g.Neighbors(n) {
-			g[neighbor].Remove(n)
+			g[neighbor] = g[neighbor].Remove(n)
 		}
 		// remove the node
 		delete(g, n)
