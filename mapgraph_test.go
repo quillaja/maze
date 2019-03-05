@@ -226,3 +226,37 @@ func Test_mapgraph_Neighbors(t *testing.T) {
 		})
 	}
 }
+
+func Test_mapgraph_RandomNode(t *testing.T) {
+	tests := []struct {
+		name string
+		g    Graph
+	}{
+		{name: "", g: constructGraph1()},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.g.RandomNode(); !tt.g.Has(got) {
+				t.Errorf("mapgraph.RandomNode() = %v,", got)
+			}
+		})
+	}
+}
+
+func Test_mapgraph_NodeCount(t *testing.T) {
+	tests := []struct {
+		name string
+		g    Graph
+		want int
+	}{
+		{name: "empty", g: NewMapGraph(), want: 0},
+		{name: "normal", g: constructGraph1(), want: 12},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.g.NodeCount(); got != tt.want {
+				t.Errorf("mapgraph.NodeCount() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

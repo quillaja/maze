@@ -47,4 +47,8 @@ type Graph interface {
 	// RemoveEdge removes the edge between a and b if a, b, and the edge are
 	// in the graph.
 	RemoveEdge(a, b Node)
+	// RandomNode gets a random node from the graph.
+	RandomNode() Node
+	// NodeCount gives the number of nodes in the graph.
+	NodeCount() int
 }

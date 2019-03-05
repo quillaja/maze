@@ -1,5 +1,9 @@
 package maze
 
+import (
+	"math/rand"
+)
+
 // mapgraph maintains an undirected graph of Nodes and edges using a map.
 type mapgraph map[Node]NodeSlice
 
@@ -75,6 +79,24 @@ func (g mapgraph) RemoveEdge(a, b Node) {
 	if g.Has(b) {
 		g[b] = g[b].Remove(a)
 	}
+}
+
+// RandomNode returns a random node from the graph. It assumes math/rand's
+// default source has already been seeded.
+func (g mapgraph) RandomNode() Node {
+	i, n := 0, rand.Intn(len(g))
+	for k := range g {
+		if i == n {
+			return k
+		}
+		i++
+	}
+	return nil // should not be reached
+}
+
+// NodeCount returns the number of nodes in the graph
+func (g mapgraph) NodeCount() int {
+	return len(g)
 }
 
 // assignUnusedID assigns an id to n.
