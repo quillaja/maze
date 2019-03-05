@@ -4,14 +4,20 @@ package maze
 type NodeSlice []Node
 
 // ToNodeSlice is a convenience method to convert a slice of any type that
-// implements Node to a NodeSlice.
-func ToNodeSlice(list []interface{}) NodeSlice {
-	s := make(NodeSlice, len(list))
-	for i := range list {
-		s[i] = list[i].(Node) // TODO: check assertion and return err to prevent panic?
-	}
-	return s
-}
+// implements Node to a NodeSlice. If slice cannot be converted to []interface{},
+// nil is returned.
+// func ToNodeSlice(slice interface{}) NodeSlice {
+// 	list, ok := slice.([]interface{}) // TODO: something wrong here
+// 	if !ok {
+// 		return nil
+// 	}
+
+// 	s := make(NodeSlice, len(list))
+// 	for i := range list {
+// 		s[i] = list[i].(Node) // TODO: check assertion and return err to prevent panic?
+// 	}
+// 	return s
+// }
 
 // Append adds the nodes to the slice.
 // Must be used as:
@@ -31,7 +37,10 @@ func (slice NodeSlice) AppendUnique(n Node) NodeSlice {
 	return slice
 }
 
-// Index returns the first index where 'n' is found, or 'len(slice)'
+// notFound is used to indicate that a Node was not found in a NodeSlice.
+const notFound = -1
+
+// Index returns the first index where 'n' is found, or 'notFound' (-1)
 // if the node is not found.
 func (slice NodeSlice) index(n Node) int {
 	// sort.Search() doesn't work as a general purpose search.
@@ -43,19 +52,19 @@ func (slice NodeSlice) index(n Node) int {
 			return i
 		}
 	}
-	return len(slice)
+	return notFound
 }
 
 // Has returns true if the slice contains 'n'.
 func (slice NodeSlice) Has(n Node) bool {
-	return slice.index(n) != len(slice)
+	return slice.index(n) != notFound
 }
 
 // RemoveAt removes the node at i. The original order of the slice
 // is not preserved.
 func (slice NodeSlice) removeAt(i int) NodeSlice {
 	l := len(slice)
-	if l == 0 {
+	if l == 0 || i < 0 || i > l-1 { // invalid cases
 		return slice
 	}
 
@@ -72,7 +81,7 @@ func (slice NodeSlice) removeAt(i int) NodeSlice {
 //     s = s.Remove(n)
 func (slice NodeSlice) Remove(n Node) NodeSlice {
 	i := slice.index(n)
-	if i < len(slice) {
+	if i != notFound {
 		return slice.removeAt(i)
 	}
 
@@ -81,6 +90,11 @@ func (slice NodeSlice) Remove(n Node) NodeSlice {
 
 // Pop removes and returns the last node on the slice.
 func (slice NodeSlice) pop() (NodeSlice, Node) {
-	n := slice[len(slice)-1]
-	return slice.removeAt(len(slice) - 1), n
+	l := len(slice)
+	if l == 0 {
+		return slice, nil
+	}
+
+	n := slice[l-1]
+	return slice.removeAt(l - 1), n
 }
